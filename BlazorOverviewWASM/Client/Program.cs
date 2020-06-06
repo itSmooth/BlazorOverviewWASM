@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using BlazorOverviewWASM.Shared.Services;
 
 namespace BlazorOverviewWASM.Client
 {
@@ -18,6 +19,8 @@ namespace BlazorOverviewWASM.Client
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            // 進行DI 容器註冊
+            builder.Services.AddScoped<IMyNoteService, MyNoteService>();
 
             await builder.Build().RunAsync();
         }

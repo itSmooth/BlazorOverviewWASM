@@ -1,4 +1,8 @@
 ﻿@using BlazorOverviewWASM.Shared.Models
+@*加入要使用BlazorOverview.Services 命名空間的API*@
+@using BlazorOverviewWASM.Shared.Services
+@*當這個Blazor 元件建立之後，要注入這個IMyNoteService 抽象型別的具體實作物件*@
+@inject IMyNoteService MyNoteService
 
 <h3> 我的記事</h3>
 @* 這裡是HTML 的標記宣告*@
@@ -92,15 +96,11 @@
     public bool ShowPopup { get; set; } = false;
     // 這次處理的紀錄是否為新增，若該屬性為false，則表示這次要修改紀錄
     public bool IsNewMode { get; set; }
-    // 元件建立的時候，所要執行的初始化工作
-    protected override void OnInitialized()
+    // 元件建立的時候，所要執行的初始化工作，這裡使用非同步方式來呼叫
+    protected override async Task OnInitializedAsync()
     {
-        // 預設建立的集合清單紀錄
-        Notes = new List<MyNote>()
-                    {
-                        new MyNote { Title= " 買蘋果" },
-                        new MyNote { Title=" 買西瓜" }
-                        };
+        // 透過IMyNoteService.RetriveAsync() 方法，來取得所有記事清單
+        Notes = await MyNoteService.RetriveAsync();
     }
     // 新增按鈕的點選事件之處理委派方法
     private void Add()
@@ -126,21 +126,24 @@
         ShowPopup = true;
     }
     // 當使用者連完資料資料且點選儲存按鈕之後，若沒有錯誤產生，就會觸發此委派方法
-    private void HandleValidSubmit()
+    private async void HandleValidSubmit()
     {
         // 設定要關閉對話窗的變數，讓對話窗的HTML 標記不會顯示在瀏覽器畫面上
         ShowPopup = false;
         //判斷此次動作是要新增還是要修改紀錄
         if (IsNewMode == true)
         {
-            //加入一筆紀錄到集合清單內
-            Notes.Add(CurrentMyNote);
+            // 透過IMyNoteService.CreateAsync() 方法，加入一筆紀錄到集合清單內
+            await MyNoteService.CreateAsync(CurrentMyNote);
         }
         else
         {
-            // 修改該紀錄
-            OrigMyNote.Title = CurrentMyNote.Title;
+            // 透過IMyNoteService.UpdateAsync() 方法，修改該紀錄
+            await MyNoteService.UpdateAsync(OrigMyNote, CurrentMyNote);
         }
+        // 透過IMyNoteService.RetriveAsync() 方法，來取得所有記事清單
+        Notes = await MyNoteService.RetriveAsync();
+        StateHasChanged();
     }
     // 關閉對話窗的方法
     private void CloseDialog()
@@ -148,10 +151,10 @@
         // 設定要關閉對話窗的變數，讓對話窗的HTML 標記不會顯示在瀏覽器畫面上
         ShowPopup = false;    // 刪除按鈕的點選事件之處理委派方法
     }
-    private void Delete(MyNote note)
+    // 刪除按鈕的點選事件之處理委派方法
+    private async void Delete(MyNote note)
     {
-        //從集合清單中刪除所選擇的紀錄
-        Notes.Remove(note);
+        // 透過IMyNoteService.DeleteAsync() 方法，從集合清單中刪除所選擇的紀錄
+        await MyNoteService.DeleteAsync(note);
     }
-
-}
+    }
