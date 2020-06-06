@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using BlazorOverviewWASM.Shared.Services;
+using BlazorOverviewWASM.Client.Services;
+using System.Net.Http.Headers;
 
 namespace BlazorOverviewWASM.Client
 {
@@ -20,8 +22,13 @@ namespace BlazorOverviewWASM.Client
 
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             // 進行DI 容器註冊
-            builder.Services.AddScoped<IMyNoteService, MyNoteService>();
-
+            //builder.Services.AddScoped<IMyNoteService, MyNoteService>();
+            //使用IHttpClientFactory 來註冊IMyNoteService 服務
+            builder.Services.AddHttpClient<IMyNoteService, MyNoteWebAPIService>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:5001/");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            });
             await builder.Build().RunAsync();
         }
     }
