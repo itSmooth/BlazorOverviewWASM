@@ -156,6 +156,6 @@
     {
         // 透過IMyNoteService.DeleteAsync() 方法，從集合清單中刪除所選擇的紀錄
         await MyNoteService.DeleteAsync(note);
-        Notes = await MyNoteService.RetriveAsync();
+        Notes = await MyNoteService.RetriveAsync();  // TODO : 第八章小bug在這，刪除後不會 reload
     }
 }
