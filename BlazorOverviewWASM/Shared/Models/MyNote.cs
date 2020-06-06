@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace BlazorOverviewWASM.Shared.Models
 {
     public class MyNote: ICloneable
     {
+        [JsonPropertyName("Id")]
+        public int Id { get; set; }
+        [JsonPropertyName("Title")]
         [Required(ErrorMessage = " 事項標題不可為空白")]
         public string Title { get; set; }
 
