@@ -23,12 +23,14 @@ namespace BlazorOverviewWASM.Client
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             // 進行DI 容器註冊
             //builder.Services.AddScoped<IMyNoteService, MyNoteService>();
-            //使用IHttpClientFactory 來註冊IMyNoteService 服務
-            builder.Services.AddHttpClient<IMyNoteService, MyNoteWebAPIService>(client =>
-            {
-                client.BaseAddress = new Uri("https://localhost:5001/");
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            });
+            ////使用IHttpClientFactory 來註冊IMyNoteService 服務
+            //builder.Services.AddHttpClient<IMyNoteService, MyNoteWebAPIService>(client =>
+            //{
+            //    client.BaseAddress = new Uri("https://localhost:5001/");
+            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //});
+            // MyNoteWebAPIService所需的 HttpClient，之前已經注入HttpClient了，注入方式改為下面
+            builder.Services.AddTransient<IMyNoteService, MyNoteWebAPIService>();
             await builder.Build().RunAsync();
         }
     }
