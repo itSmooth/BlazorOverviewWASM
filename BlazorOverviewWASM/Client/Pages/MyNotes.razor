@@ -156,6 +156,7 @@
     {
         // 透過IMyNoteService.DeleteAsync() 方法，從集合清單中刪除所選擇的紀錄
         await MyNoteService.DeleteAsync(note);
-        Notes = await MyNoteService.RetriveAsync();  // TODO : 第八章小bug在這，刪除後不會 reload
+        Notes = await MyNoteService.RetriveAsync();  // 第八章小bug在這，已修正
+        this.StateHasChanged();                      // 正常應該會重新Render，但這不知為何不會，下此方法強制重新 Render
     }
 }
